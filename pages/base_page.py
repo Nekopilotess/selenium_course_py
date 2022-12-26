@@ -1,35 +1,28 @@
 import math
-from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver import Remote
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, NoAlertPresentException
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from .locators import BasePageLocators
 
 
-class BasePage:
-    def __init__(self, browser: Remote, url: str) -> None:
-        """Base class for the web page
-
-        :param selenium.webdriver.Remote browser: Selenium WebDriver instance
-        :param str url: Link to the page
-        """
+class BasePage():
+    def __init__(self, browser: Remote, url: str, timeout=10):
         super().__init__()
         self.browser = browser
         self.url = url
-        self.browser.implicitly_wait(10)
+        self.browser.implicitly_wait(timeout)
 
-    def open(self) -> None:
-        """Open the given web page in the browser
-
-        :return: None
-        """
+    def open(self):
         self.browser.get(self.url)
 
-    def is_element_present(self, how: str, what: str) -> bool:
-        """
+    def go_to_login_page(self):
+        self.browser.find_element(*BasePageLocators.LOGIN_LINK).click()
 
-        :param how:
-        :param what:
-        :return:
-        """
+    def should_be_login_link(self):
+        assert self.is_element_present(*BasePageLocators.LOGIN_LINK), "Login Link is not presented"
+
+    def is_element_present(self, how: str, what: str):
         try:
             self.browser.find_element(how, what)
         except NoSuchElementException:
@@ -37,7 +30,7 @@ class BasePage:
 
         return True
 
-    def solve_quiz_and_get_code(self) -> None:
+    def solve_quiz_and_get_code(self):
         alert = self.browser.switch_to.alert
         x = alert.text.split(" ")[2]
         answer = str(math.log(abs((12 * math.sin(float(x))))))
@@ -49,3 +42,20 @@ class BasePage:
             alert.accept()
         except NoAlertPresentException:
             print("No second alert presented")
+
+    def is_not_element_present(self, how, what, timeout=10):
+        try:
+            WebDriverWait(self.browser, timeout).until(EC.presence_of_element_located((how, what)))
+        except TimeoutException:
+            return True
+
+        return False
+
+    def is_disappeared(self, how, what, timeout=10):
+        try:
+            WebDriverWait(self.browser, timeout, 1, TimeoutException). \
+                until_not(EC.presence_of_element_located((how, what)))
+        except TimeoutException:
+            return False
+
+        return True
