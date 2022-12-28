@@ -10,6 +10,7 @@ class LoginPage(BasePage):
         self.should_be_login_url()
         self.should_be_login_form()
         self.should_be_register_form()
+        self.register_new_user()
 
     def should_be_login_url(self):
         assert "login" in self.url, "Login link is not presented"
@@ -23,10 +24,10 @@ class LoginPage(BasePage):
         self.browser.find_element(*LoginPageLocators.REGISTER_FORM), "Register form is not presented"
         assert True
 
-    def register_new_user(self, email, password):
-        email = str(time.time()) + "@fakemail.org"
-        password = str(time.time()) + "bihog860332"
-        #self.browser.find_element(*BasePageLocators.EMAIL).send_keys("porzuzipsi@gufum.com")
-        #self.browser.find_element(*BasePageLocators.PASSWORD).send_keys("bihog860332")
-        #self.browser.find_element(*BasePageLocators.CONFIRM_PASSWORD).send_keys("bihog860332")
-        #self.browser.find_element(*BasePageLocators.REGISTER_BTN).click()
+    def register_new_user(self):
+        self.email = str(time.time()) + "@fakemail.org"
+        self.password = str(time.time()) + "bihog860332"
+        self.browser.find_element(*BasePageLocators.EMAIL).send_keys(self.email)
+        self.browser.find_element(*BasePageLocators.PASSWORD).send_keys(self.password)
+        self.browser.find_element(*BasePageLocators.CONFIRM_PASSWORD).send_keys(self.password)
+        self.browser.find_element(*BasePageLocators.REGISTER_BTN).click()

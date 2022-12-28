@@ -25,3 +25,17 @@ class ProductPage(BasePage):
     def should_disappeared(self):
         assert self.is_disappeared(*ProductPageLocators.SUCCESS_MESSAGE), \
             "Success message is not disappeared"
+
+    def guest_can_add_product_to_basket(self):
+        assert self.is_element_present(*ProductPageLocators.ADD_TO_CART), "'Add' button is not presented"
+
+    def guest_cant_see_success_message_after_adding_product_to_basket(self):
+        assert self.is_not_element_present(*ProductPageLocators.SUCCESS_MESSAGE), "Success message is presented, but " \
+                                                                                  "should not be "
+
+    def guest_cant_see_success_message(self):
+        assert self.is_not_element_present(*ProductPageLocators.SUCCESS_MESSAGE), "Success message is presented, but " \
+                                                                                  "should not be "
+
+    def message_disappeared_after_adding_product_to_basket(self):
+        assert self.is_disappeared(*ProductPageLocators.SUCCESS_MESSAGE), "Success message is not disappeared"
